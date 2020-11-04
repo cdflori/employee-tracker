@@ -166,7 +166,70 @@ function addDepartment() {
 
         let query = "INSERT INTO department SET?"
         console.log(query)
-        let queryDep
+        let queryDep = connection.query(query, [{name: result.addDep}], function (err){
+            if (err) throw err;
+            console.table("Success, you added a Department!")
+        });
     })
+}
+
+function addNewRole(){
+    connection.query("SELECT * FROM role", function( err, roles){
+        connection.query("SELECT * FROM department", function(err, departments){
+            if (err) throw err;
+
+            inquirer.prompt([
+                {
+                    name: "newRole",
+                    type: "rawlist",
+                    choices: function (){
+                        let roleArray = [];
+                        for (let i=0; i< roles.length; i ++) {
+                            roleArray.push(roles[i].title);
+                        } 
+                        return roleArray;
+                    },
+                    message: "Select a Role you would like to add?"
+                },
+                {
+                    name: "newSalary",
+                    type: "input",
+                    message: "Enter in the employee's salary."
+                },
+                {
+                    name: "depChoice",
+                    type: "rawlist",
+                    choices: function(){
+                        let depArray = [];
+                        for (let i = 0; i< departments.length; i ++) {
+                            depArray.push(departments[i].name);
+                        }
+                        return depArray;
+                    },
+                    message: "Select the Department this role is in." 
+                },
+            ]).then (function(res){
+                for (let i = 0; i< departments.length; i++){
+                    if (departments[i].name === res.choice) {
+                        res.department_id = departments[i].id
+                    }
+                }
+                let query = "INSERT INTO role SET?"
+                const VALUES = {
+                    title: result.newRole,
+                    salary: result.newSalary,
+                    department_id: result.department_id
+                }
+                connection.query(query, VALUES, function(err){
+                    if (err) throw err;
+                    console.table("Success, a new Role was created!");
+                    main();
+                });
+            });
+
+        });
+    });
+
+    
 }
 // module.exports = connection
