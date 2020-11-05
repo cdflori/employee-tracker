@@ -36,11 +36,11 @@ const selection = [
             "View employees by department",
             "Update employee role",
             "View all roles",
-            "Add role",
+            "Add new role",
             "View all departments",
             "Add department",
             "Delete Employee",
-            "Delete Employee Role",
+            "Delete Role",
             "Delete Department",
             "Exit"
         ]
@@ -49,15 +49,15 @@ const selection = [
 
 
 function main() {
-    inquirer.prompt(selection).then(results => {
-        switch (results.selection) {
+    inquirer.prompt(selection).then(answers => {
+        switch (answers.selection) {
             case 'Add new employee':
                 addEmployee();
                 break;
             case 'View all employees':
                 viewAllEmployees();
                 break;
-            case 'View all employees by department':
+            case 'View employees by department':
                 viewByDep();
                 break;
             case 'View all roles':
@@ -78,10 +78,10 @@ function main() {
             case 'Delete employee':
                 deleteEmployee();
                 break;
-            case 'Delete employee':
+            case 'Delete role':
                 deleteRole();
                 break;
-            case 'Delete employee':
+            case 'Delete department':
                 deleteDepartment();
                 break;
             default:
@@ -90,6 +90,8 @@ function main() {
         }
     });
 }
+
+// Create functions shown below
 
 function addEmployee() {
     inquirer.prompt([
@@ -114,10 +116,10 @@ function addEmployee() {
             message: "Enter the employee's manager ID"
         },
 
-    ]).then(function (results) {
+    ]).then(function (answers) {
 
         let query = "INSERT INTO employee SET ?"
-        connection.query(query, [results], function (err) {
+        connection.query(query, [answers], function (err) {
             if (err) throw err;
             console.table("Success, employee added!")
             main();
@@ -126,6 +128,7 @@ function addEmployee() {
     });
 }
 
+
 function addDepartment() {
     inquirer.prompt([
         {
@@ -133,11 +136,11 @@ function addDepartment() {
             name: "dept_name",
             message: "Select the Department you would like to add."
         }
-    ]).then(function (results) {
+    ]).then(function (answers) {
 
         let query = "INSERT INTO department SET?"
         // console.log(query)
-        connection.query(query, [results], function (err) {
+        connection.query(query, [answers], function (err) {
             if (err) throw err;
             console.table("Success, you added a Department!")
             main();
@@ -163,15 +166,17 @@ function addNewRole() {
             message: "Enter the Department ID for this employee's role?"
         },
 
-    ]).then(function (results) {
-        let query = "INSERT INTO roles SET?"
-        connection.query(query, [results], function (err) {
+    ]).then(function (answers) {
+        let query = "INSERT INTO roles SET ?"
+        connection.query(query, [answers], function (err) {
             if (err) throw err;
             console.table("Success, a new Role was created!");
             main();
         });
     });
 }
+
+// View functions shown below
 
 function viewAllEmployees() {
     connection.query(
@@ -217,6 +222,7 @@ function updateRole() {
         })
         console.log(employee);
         connection.query("SELECT * FROM employee", function (err, res1) {
+            if (err) throw err;
             console.log(res1);
             const roles = res.map(element => {
                 return (
@@ -241,9 +247,9 @@ function updateRole() {
                     message: "Select the employee's new role ID.",
                     choices: roles
                 }
-            ]).then(results => {
-                console.log(results)
-                connection.query("UPDATE employee SET role_id = ? WHERE id = ?", [results.employee, results.role],
+            ]).then(answers => {
+                console.log(answers)
+                connection.query("UPDATE employee SET role_id = ? WHERE id = ?", [answers.employee, answers.role],
                     function (err, res) {
                         if (err) throw err;
                         console.log(res.affectedRows + "Employee updated!\n");
@@ -253,6 +259,8 @@ function updateRole() {
         })
     })
 }
+
+// Delete functions are shown below
 
 function deleteEmployee() {
     inquirer.prompt([
