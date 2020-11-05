@@ -39,9 +39,9 @@ const selection = [
             "Add new role",
             "View all departments",
             "Add department",
-            "Delete Employee",
-            "Delete Role",
-            "Delete Department",
+            "Delete employee",
+            "Delete role",
+            "Delete department",
             "Exit"
         ]
     }
